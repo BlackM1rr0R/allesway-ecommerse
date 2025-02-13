@@ -34,10 +34,9 @@ public class WebSecurityConfig {
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Updated configuration for Spring Security 6.x
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF
-                .cors(cors -> cors.disable()) // Disable CORS (or configure if needed)
+                .cors(cors -> cors.configure(http))  // CORS'u aktifleştir
+                .csrf(csrf -> csrf.disable()) // CSRF'yi kapat
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(unauthorizedHandler)
                 )
@@ -46,11 +45,25 @@ public class WebSecurityConfig {
                 )
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/api/auth/**", "/api/test/all").permitAll() // Use 'requestMatchers' instead of 'antMatchers'
+                                .requestMatchers("/api/tasks/allTask").permitAll()
+                                .requestMatchers("/all/category/get/all/category").permitAll()
+                                .requestMatchers("/api/tasks/categories/sub/**").permitAll()
+                                .requestMatchers("/all/subCategories/**").permitAll()
+                                .requestMatchers("/api/auth/**", "/api/test/all").permitAll()
+                                .requestMatchers("/api/tasks/task/categories/**").permitAll()
+                                .requestMatchers("/api/tasks/details/**").permitAll()
+                                .requestMatchers("/api/tasks/create").hasAuthority("ADMIN,USER")
+                                .requestMatchers("/api/tasks/createTask/").hasAuthority("ADMIN,USER")
+                                .requestMatchers("/api/tasks/search/**").permitAll()
+                                .requestMatchers("/image").permitAll()
+                                .requestMatchers("/image/**").permitAll()
+                                .requestMatchers("/add/add/").hasAuthority("ADMIN,USER")
+                                .requestMatchers("/add/favorite/").hasAuthority("ADMIN,USER")
                                 .anyRequest().authenticated()
                 );
-        // Add the JWT Token filter before the UsernamePasswordAuthenticationFilter
+
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
 }
