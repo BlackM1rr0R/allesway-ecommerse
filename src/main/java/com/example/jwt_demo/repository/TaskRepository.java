@@ -10,7 +10,7 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
 
-    List<Task> findByCategory_CategoryName(String categoryName);  // Doğru ilişkilendirme
+    List<Task> findByCategory_CategoryName(String categoryName);
 
     List<Task> findBySubCategory_SubCategoryName(String subCategoryName);
 

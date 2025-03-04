@@ -6,11 +6,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface FavoritesRepository extends JpaRepository<Favorites, Long> {
     Favorites findByUsers(User user);
-    List<Favorites> findByUsersId(Long userId); // Kullanıcı ID'si ile favoriler
+    Optional<Favorites> findByUsers_IdAndTasks_Id(Long userId, Long taskId);
+
+
 }
+
 
 
 

@@ -1,5 +1,8 @@
 package com.example.jwt_demo.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,14 +32,10 @@ public class Favorites {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User users;
 
     public void addTask(Task task) {
-
-
-            this.tasks.add(task);
-
+        this.tasks.add(task);
     }
-
 }
-

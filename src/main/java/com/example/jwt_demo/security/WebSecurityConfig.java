@@ -18,20 +18,24 @@ public class WebSecurityConfig {
     CustomUserDetailsService userDetailsService;
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
+
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
+
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration
     ) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -45,25 +49,31 @@ public class WebSecurityConfig {
                 )
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
+                                // Genel erişim izinleri
                                 .requestMatchers("/api/tasks/allTask").permitAll()
                                 .requestMatchers("/all/category/get/all/category").permitAll()
                                 .requestMatchers("/api/tasks/categories/sub/**").permitAll()
                                 .requestMatchers("/all/subCategories/**").permitAll()
                                 .requestMatchers("/api/auth/**", "/api/test/all").permitAll()
                                 .requestMatchers("/api/tasks/task/categories/**").permitAll()
-                                .requestMatchers("/api/tasks/details/**").permitAll()
-                                .requestMatchers("/api/tasks/create").hasAuthority("ADMIN,USER")
-                                .requestMatchers("/api/tasks/createTask/").hasAuthority("ADMIN,USER")
+                                .requestMatchers("/api/tasks/details/{taskId}").permitAll()
                                 .requestMatchers("/api/tasks/search/**").permitAll()
+                                .requestMatchers("/api/tasks/remove/").permitAll()
+
                                 .requestMatchers("/image").permitAll()
                                 .requestMatchers("/image/**").permitAll()
-                                .requestMatchers("/add/add/").hasAuthority("ADMIN,USER")
-                                .requestMatchers("/add/favorite/").hasAuthority("ADMIN,USER")
+                                // Admin ve User yetkisi gerektiren endpoints
+                                .requestMatchers("/api/tasks/create").hasAnyAuthority("ADMIN", "USER")
+                                .requestMatchers("/api/tasks/createTask/").hasAnyAuthority("ADMIN", "USER")
+                                .requestMatchers("/api/tasks/get/").hasAnyAuthority("ADMIN", "USER")
+                                .requestMatchers("/add/delete/").hasAnyAuthority("ADMIN", "USER")
+
                                 .anyRequest().authenticated()
                 );
 
+        // JWT Token kontrolü
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
-
 }

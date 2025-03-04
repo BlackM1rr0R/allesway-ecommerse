@@ -46,7 +46,6 @@ public class AuthController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return jwtUtils.generateToken(userDetails.getUsername());
     }
-
     @PostMapping("/signup")
     @Transactional
     public String registerUser(@RequestParam("username") String username,
@@ -58,8 +57,6 @@ public class AuthController {
         if (userRepository.existsByUsername(username)) {
             return "Error: Username is already taken!";
         }
-
-
         User newUser = new User();
         newUser.setUsername(username);
         newUser.setEmail(email);
@@ -67,26 +64,6 @@ public class AuthController {
         newUser.setAdress(adress);
         newUser.setPassword(encoder.encode(password));
         newUser.setRole(Role.USER);
-
-
-        if (image != null && !image.isEmpty()) {
-            try {
-                Image imageEntity = new Image();
-                imageEntity.setName(image.getOriginalFilename());
-                imageEntity.setType(image.getContentType());
-                imageEntity.setImageData(image.getBytes());
-
-
-                imageRepository.save(imageEntity);
-
-
-                newUser.setImage(imageEntity);
-            } catch (IOException e) {
-                return "Error: Failed to process image";
-            }
-        }
-
-
         userRepository.save(newUser);
         return "User registered successfully!";
     }

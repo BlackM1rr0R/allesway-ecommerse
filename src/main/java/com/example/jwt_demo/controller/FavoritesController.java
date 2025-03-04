@@ -5,7 +5,6 @@ import com.example.jwt_demo.service.FavoritesService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,27 +24,23 @@ public class FavoritesController {
     public List<Favorites> getAllFavorites() {
         return favoritesService.getAllFavorites();
     }
-    @DeleteMapping("/delete/{Id}")
-    public String deleteFavorites(@PathVariable Long Id) {
-        favoritesService.deleteFavorites(Id);
+    @DeleteMapping("/delete/{userId}/{taskId}")
+    public String deleteFavorites(@PathVariable Long userId, @PathVariable Long taskId) {
+        favoritesService.deleteFavorites(userId, taskId);
         return "Silindi";
     }
-    @GetMapping("/favorite/{userId}")
-    public List<Task> getFavorites(@PathVariable Long userId) {
-        List<Favorites> favorites = favoritesService.getFavorites(userId);
 
-        // Her bir favori için ilgili task'ları döndürmek
-        List<Task> tasks = new ArrayList<>();
-        for (Favorites favorite : favorites) {
-            tasks.add((Task) favorite.getTasks());  // assuming Favorites model has a 'Task' field
-        }
-        return tasks;
-    }
+
     @PostMapping("/users/{userId}/favorites/{taskId}")
     public ResponseEntity<?> addTaskToFavorites(@PathVariable Long userId, @PathVariable Long taskId) {
         favoritesService.addTaskToFavorites(userId, taskId);
         return ResponseEntity.ok("Task added to favorites successfully!");
     }
 
+    @GetMapping("/users/{userId}/favorites")
+    public ResponseEntity<List<Task>> getUserFavorites(@PathVariable Long userId) {
+        List<Task> userFavorites = favoritesService.getUserFavorites(userId);
+        return ResponseEntity.ok(userFavorites);
+    }
 
 }

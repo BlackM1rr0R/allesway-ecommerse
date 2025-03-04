@@ -23,5 +23,4 @@ public class CategoryController {
     public Category addCategory(@RequestBody Category category) {
         return categoryService.addCategory(category);
     }
-
 }
