@@ -48,23 +48,14 @@ public class AuthController {
     }
     @PostMapping("/signup")
     @Transactional
-    public String registerUser(@RequestParam("username") String username,
-                               @RequestParam("email") String email,
-                               @RequestParam("phonenumber") String phonenumber,
-                               @RequestParam("adress") String adress,
-                               @RequestParam("password") String password,
-                               @RequestParam(value = "image", required = false) MultipartFile image) {
-        if (userRepository.existsByUsername(username)) {
+    public String registerUser(@RequestBody User user) {
+        if (userRepository.existsByUsername(user.getUsername())) {
             return "Error: Username is already taken!";
         }
-        User newUser = new User();
-        newUser.setUsername(username);
-        newUser.setEmail(email);
-        newUser.setPhonenumber(phonenumber);
-        newUser.setAdress(adress);
-        newUser.setPassword(encoder.encode(password));
-        newUser.setRole(Role.USER);
-        userRepository.save(newUser);
+        user.setPassword(encoder.encode(user.getPassword()));
+        user.setRole(Role.USER);
+        userRepository.save(user);
         return "User registered successfully!";
     }
+
 }

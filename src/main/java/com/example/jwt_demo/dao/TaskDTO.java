@@ -17,20 +17,22 @@ public class TaskDTO {
     private String price;
     private String categoryName;
     private String subCategoryName;
-    private Set<String> base64Images;
+    private String image;
 
-    public TaskDTO(Long id,String title, String description, String price, String s, String s1) {
+    public TaskDTO(Long id, String title, String description, String price, String s, String s1) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.price = price;
         this.categoryName = s;
         this.subCategoryName = s1;
-        this.base64Images = new HashSet<>();
+
 
     }
 
     public TaskDTO() {
 
     }
+
+
 }

@@ -20,15 +20,19 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
     private String type;
 
     @Lob
-    private String base64Data;
+    @Column(name = "imagedata", length = 1000)
+    private byte[] imageData;
 
     @ManyToMany
     @JoinTable(
@@ -37,7 +41,44 @@ public class Image {
             inverseJoinColumns = @JoinColumn(name = "image_id")
     )
     private Set<Image> images = new HashSet<>();
+    public static class Builder {
+        private Long id;
+        private String name;
+        private String type;
+        private byte[] imageData;
 
+        // Builder metodları
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder type(String type) {
+            this.type = type;
+            return this;
+        }
+
+        public Builder imageData(byte[] imageData) {
+            this.imageData = imageData;
+            return this;
+        }
+
+        // Builder metodu ile oluşturma
+        public Image build() {
+            // Parametresiz yapıcıyı kullanalım
+            Image imageDataObj = new Image();
+            imageDataObj.id = this.id;
+            imageDataObj.name = this.name;
+            imageDataObj.type = this.type;
+            imageDataObj.imageData = this.imageData;
+            return imageDataObj;
+        }
+    }
 }
 
 

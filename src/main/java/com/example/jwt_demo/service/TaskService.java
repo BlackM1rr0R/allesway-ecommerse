@@ -5,10 +5,7 @@ import com.example.jwt_demo.model.*;
 import com.example.jwt_demo.repository.*;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -124,33 +121,53 @@ public class TaskService {
             .collect(Collectors.toList());
     }
 
-    public Task createTask(Task task) {
+//    public Task createTask(Task task) {
+//
+//        task.setTitle(task.getTitle());
+//        task.setDescription(task.getDescription());
+//        task.setPrice(task.getPrice());
+//        Category category = task.getCategory();
+//        if (category != null) {
+//            category.setCategoryName(task.getCategory().getCategoryName());
+//        }
+//        SubCategory subCategory = task.getSubCategory();
+//        if (subCategory != null) {
+//            subCategory.setSubCategoryName(task.getSubCategory().getSubCategoryName());
+//        }
+//        return taskRepository.save(task);
+//    }
+public Task createTask(Task task) {
+    return taskRepository.save(task);
+}
 
-        task.setTitle(task.getTitle());
-        task.setDescription(task.getDescription());
-        task.setPrice(task.getPrice());
-        Category category = task.getCategory();
-        if (category != null) {
-            category.setCategoryName(task.getCategory().getCategoryName());
-        }
-        SubCategory subCategory = task.getSubCategory();
-        if (subCategory != null) {
-            subCategory.setSubCategoryName(task.getSubCategory().getSubCategoryName());
-        }
-        return taskRepository.save(task);
+    public byte[] getTaskImage(Long taskId) {
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+        return ImageUtil.decompressImage(task.getImage());
     }
+
 
     public List<TaskDTO> getAllTasks() {
         List<Task> tasks = taskRepository.findAll();
-        return tasks.stream().map(task -> new TaskDTO(
-                task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getPrice(),
-                task.getCategory() != null ? task.getCategory().getCategoryName() : "Kategori yok",  // Get category name
-                task.getSubCategory() != null ? task.getSubCategory().getSubCategoryName() : "Alt kategori yok"  // Get subcategory name
-        )).collect(Collectors.toList());
+        return tasks.stream().map(task -> {
+            TaskDTO taskDTO = new TaskDTO(
+                    task.getId(),
+                    task.getTitle(),
+                    task.getDescription(),
+                    task.getPrice(),
+                    task.getCategory() != null ? task.getCategory().getCategoryName() : "Kategori yok",  // Kategori adı
+                    task.getSubCategory() != null ? task.getSubCategory().getSubCategoryName() : "Alt kategori yok"  // Alt kategori adı
+            );
+
+            // Resim var mı kontrolü ve Base64 formatına çevirme
+            if (task.getImage() != null) {
+                String base64Image = Base64.getEncoder().encodeToString(task.getImage());
+                taskDTO.setImage("data:image/jpeg;base64," + base64Image);  // Base64 formatında resim
+            }
+
+            return taskDTO;
+        }).collect(Collectors.toList());
     }
+
 
     public TaskDTO getTaskById(Long taskId) {
         Task task = taskRepository.findById(taskId).get();
